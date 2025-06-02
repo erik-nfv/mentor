@@ -55,7 +55,11 @@ class Subject:
 		return(self.name)
 	
 	def start_lesson(self, teacher, students):
+		if self not in teacher.subjects:
+			raise ValueError(f'Teacher does not teach subject: {self}')
 		for student in students:
+			if self not in student.subjects:
+				raise ValueError(f'Student does not study subject: {self}')
 			student.add_grade(self, random.randint(1,5))
 
 m = Subject("Math")
@@ -75,3 +79,11 @@ print(t.subjects)
 
 m.start_lesson(t, (s,))
 print(s.grades)
+
+# Ошибка
+# b = Subject("Biology")
+# b.start_lesson(t, (s,))
+
+# Ошибка
+# s2 = Student('Petr', (r,))
+# m.start_lesson(t, (s2,))
