@@ -1,5 +1,6 @@
 import random
 from enum import StrEnum
+from faker import Faker
 
 class SubjectEnum(StrEnum):
     # +Для заранее известного списка констант удобно использовать StrEnum, почитай его отличие от обычного Enum
@@ -25,7 +26,7 @@ class UniversityMember:
         return set(subjects)
 
     def __repr__(self):
-        return self.first_name
+        return f"{type(self).__name__} - {self.first_name} {self.last_name or ''}"
 
 class Student(UniversityMember):
     def __init__(self, first_name, last_name=None, age=None, subjects=None):
@@ -61,6 +62,9 @@ class Teacher(UniversityMember):
     # +А почему если поле subject есть и у учителя и у студента - оно не в базовом классе?
 
 class Subject:
+    MIN_GRADE = 1
+    MAX_GRADE = 5
+
     def __init__(self, name: SubjectEnum):
         if not isinstance(name, SubjectEnum):
             raise ValueError(f'Subject is not allowed: {name}')
@@ -76,41 +80,50 @@ class Subject:
         return hash(self.name)
 
     def start_lesson(self, teacher, students):
+        print(f'Starting lesson [{self.name}]...')
         if self not in teacher.subjects:
             raise ValueError(f'Teacher does not teach subject: {self}')
         for student in students:
             if self not in student.subjects:
                 raise ValueError(f'Student does not study subject: {self}')
-            student.add_grade(self, random.randint(1,5))
+            student.add_grade(self, random.randint(Subject.MIN_GRADE, Subject.MAX_GRADE))
             teacher.add_student(student)
-            # Границы оценок лучше вынести в константы в тело класса, а не хардкодить вот так в коде
-            # К ним будет удобно потом повязываться другим кодом чтобы генерировать тестовые данные или проверять что-то
+            print(f'Finishing lesson [{self.name}]...')
+            # +Границы оценок лучше вынести в константы в тело класса, а не хардкодить вот так в коде. К ним будет удобно потом повязываться другим кодом чтобы генерировать тестовые данные или проверять что-то
 
-# Советую для генерации тестовых данных использовать Faker
-m = Subject(SubjectEnum.MATH)
-r = Subject(SubjectEnum.RUSSIAN)
+# +Советую для генерации тестовых данных использовать Faker
+fake = Faker()
 
-m2 = Subject(SubjectEnum.MATH)
+s = Student(
+    fake.first_name(),
+    fake.last_name(),
+    subjects={Subject(subj) for subj in random.sample(list(SubjectEnum), k=2)}
+)
+t = Teacher(
+    fake.first_name(),
+    fake.last_name(),
+    subjects={Subject(subj) for subj in random.sample(list(SubjectEnum), k=2)}
+)
 
-s = Student('Petr', subjects=(m, r, m2))
-t = Teacher('Ivan', subjects=(m,))
+print(s, s.grades)
+print(t, t.subjects)
 
-print(s.subjects)
-print(s.grades)
-s.add_grade(m, 4)
-s.add_grade(m, 5)
-print(s.grades)
-print(s.get_avg_grade(m))
+for i in range(0, 10):
+    subj = random.choice(list(t.subjects))
+    try:
+        subj.start_lesson(t, (s,))
+    except ValueError as e:
+        print(e)
+    print(s, s.grades)
+    try:
+        print(s, s.get_avg_grade(subj))
+    except ValueError as e:
+        print(e)
+    print(t, t.students)
 
-print(t.subjects)
 
-m.start_lesson(t, (s,))
-print(s.grades)
-print(t.students)
+
+
 # Ошибка
 # b = Subject("Biology")
 # b.start_lesson(t, (s,))
-
-# Ошибка
-# s2 = Student('Petr', (r,))
-# m.start_lesson(t, (s2,))
