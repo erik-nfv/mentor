@@ -24,6 +24,9 @@ class UniversityMember:
                 raise ValueError(f'Subject is not allowed: {subj}')
         return set(subjects)
 
+    def __repr__(self):
+        return self.first_name
+
 class Student(UniversityMember):
     def __init__(self, first_name, last_name=None, age=None, subjects=None):
         super().__init__(first_name, last_name, age, subjects)
@@ -45,9 +48,16 @@ class Student(UniversityMember):
         return sum(self.grades[subject]) / len(self.grades[subject])
 
 class Teacher(UniversityMember):
-    def __init__(self, first_name, last_name=None, age=None, subjects=None):
+    def __init__(self, first_name, last_name=None, age=None, subjects=None, students=None):
         super().__init__(first_name, last_name, age, subjects)
-    # У учителя хотелось бы видеть логику какую-то
+        if students is None:
+            students = set()
+        self.students = students
+
+    def add_student(self, student: Student):
+        self.students.add(student)
+
+    # +У учителя хотелось бы видеть логику какую-то
     # +А почему если поле subject есть и у учителя и у студента - оно не в базовом классе?
 
 class Subject:
@@ -72,6 +82,7 @@ class Subject:
             if self not in student.subjects:
                 raise ValueError(f'Student does not study subject: {self}')
             student.add_grade(self, random.randint(1,5))
+            teacher.add_student(student)
             # Границы оценок лучше вынести в константы в тело класса, а не хардкодить вот так в коде
             # К ним будет удобно потом повязываться другим кодом чтобы генерировать тестовые данные или проверять что-то
 
@@ -93,9 +104,9 @@ print(s.get_avg_grade(m))
 
 print(t.subjects)
 
-# m.start_lesson(t, (s,))
-# print(s.grades)
-
+m.start_lesson(t, (s,))
+print(s.grades)
+print(t.students)
 # Ошибка
 # b = Subject("Biology")
 # b.start_lesson(t, (s,))
