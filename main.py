@@ -1,11 +1,7 @@
 import random
 from faker import Faker
-from SubjectEnum import SubjectEnum
-from Student import Student
-from StudentGroup import StudentGroup
-from Teacher import Teacher
-from Subject import Subject
-from Exam import Exam
+from exam_module import Exam, Subject, SubjectEnum
+from members import Student, StudentGroup, Teacher
 
 fake = Faker()
 

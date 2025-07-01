@@ -1,4 +1,4 @@
-from SubjectEnum import SubjectEnum
+from .subject_enum import SubjectEnum
 
 
 class Subject:

@@ -1,4 +1,4 @@
-from TicketGenerator import TicketGenerator
+from .ticket_generator import TicketGenerator
 
 
 class Exam:

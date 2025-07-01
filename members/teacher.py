@@ -1,4 +1,4 @@
-from UniversityMember import UniversityMember
+from .university_member import UniversityMember
 
 
 class Teacher(UniversityMember):

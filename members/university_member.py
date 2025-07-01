@@ -1,4 +1,4 @@
-from Subject import Subject
+from exam_module import Subject
 
 
 class UniversityMember:

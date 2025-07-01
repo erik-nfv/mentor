@@ -1,5 +1,5 @@
 import random
-from UniversityMember import UniversityMember
+from .university_member import UniversityMember
 
 
 class Student(UniversityMember):

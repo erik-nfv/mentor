@@ -1,6 +1,6 @@
 import random
 from faker import Faker
-from Ticket import Ticket
+from .ticket import Ticket
 
 
 class TicketGenerator:
